@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 export const metadata = { title: "Admin" };
@@ -8,7 +8,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  const session = await getSession();
   if (session?.user?.role !== "ADMIN") redirect("/");
 
   return (

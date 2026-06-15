@@ -1,13 +1,8 @@
-import { prisma } from "@/lib/prisma";
+import { serverFetch } from "@/lib/server-api";
 
 export default async function AdminDashboard() {
-  const posts = await prisma.post.findMany({
-    orderBy: { updatedAt: "desc" },
-    include: {
-      categories: { include: { category: true } },
-      likes: true,
-    },
-  });
+  const res = await serverFetch("/admin/posts");
+  const posts = res.ok ? await res.json() : [];
 
   return (
     <div>
@@ -31,30 +26,23 @@ export default async function AdminDashboard() {
           </tr>
         </thead>
         <tbody>
-          {posts.map((post) => (
+          {posts.map((post: any) => (
             <tr key={post.id} className="border-b border-line hover:bg-surface">
               <td className="py-3 pr-4">
-                <a
-                  href={`/admin/posts/${post.id}/edit`}
-                  className="hover:underline font-medium"
-                >
+                <a href={`/admin/posts/${post.id}/edit`} className="hover:underline font-medium">
                   {post.title}
                 </a>
               </td>
               <td className="py-3 pr-4">
-                <span
-                  className={[
-                    "font-mono text-xs px-2 py-0.5 border",
-                    post.status === "PUBLISHED"
-                      ? "border-accent-blue text-accent-blue"
-                      : "border-muted text-muted",
-                  ].join(" ")}
-                >
+                <span className={[
+                  "font-mono text-xs px-2 py-0.5 border",
+                  post.status === "PUBLISHED" ? "border-accent-blue text-accent-blue" : "border-muted text-muted",
+                ].join(" ")}>
                   {post.status === "PUBLISHED" ? "Đã đăng" : "Nháp"}
                 </span>
               </td>
               <td className="py-3 pr-4 font-mono text-xs text-muted">
-                {post.categories.map((c) => c.category.name).join(", ") || "—"}
+                {post.categories.map((c: any) => c.category.name).join(", ") || "—"}
               </td>
               <td className="py-3 font-mono text-xs text-muted">
                 {new Date(post.updatedAt).toLocaleDateString("vi-VN")}
