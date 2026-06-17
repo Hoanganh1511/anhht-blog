@@ -13,7 +13,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen flex">
-      <nav className="w-48 border-r border-line bg-surface p-4 flex flex-col gap-1 shrink-0">
+      <nav className="w-48 border-r border-line bg-paper p-4 flex flex-col gap-1 shrink-0">
         <span className="font-mono uppercase tracking-[2px] text-xs text-muted mb-4 block">
           Admin
         </span>

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { Header } from "@/components/Header";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
@@ -28,7 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={`${ibmPlexMono.variable} ${inter.variable}`}>
-      <body className="min-h-screen flex flex-col">{children}</body>
+      <body className="min-h-screen flex flex-col">
+        <Header />
+        {children}
+        <ScrollToTop />
+      </body>
     </html>
   );
 }

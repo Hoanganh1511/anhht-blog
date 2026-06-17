@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { serverFetch } from "@/lib/server-api";
+import { BackButton } from "@/components/BackButton";
+import { PostContentClient } from "@/components/PostContentClient";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -24,6 +26,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-12">
+      <BackButton />
       <article>
         {post.coverImage && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -49,9 +52,7 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </header>
 
-        <div className="prose font-sans text-ink">
-          <p className="font-mono text-xs text-muted">[Content renderer sẽ implement ở Phase 2]</p>
-        </div>
+        <PostContentClient blocks={post.content ?? []} />
       </article>
 
       <section className="mt-16 border-t border-line pt-8">
