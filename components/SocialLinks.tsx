@@ -8,21 +8,23 @@ const LINKS = [
 
 export function SocialLinks() {
   return (
-    <section className="py-12 flex flex-wrap items-center gap-6 md:gap-10">
-      <span className="font-mono uppercase tracking-[3px] text-[10px] text-muted">
-        Liên kết
-      </span>
-      {LINKS.map(({ label, href }) => (
-        <Link
-          key={label}
-          href={href}
-          target={href.startsWith("http") ? "_blank" : undefined}
-          rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-          className="font-mono text-sm text-muted hover:text-ink transition-colors"
-        >
-          {label} →
-        </Link>
-      ))}
-    </section>
+    <div className="py-6 flex flex-col items-center gap-3">
+      <div className="flex items-center justify-center gap-7 flex-wrap">
+        {LINKS.map(({ label, href }) => (
+          <Link
+            key={label}
+            href={href}
+            target={href.startsWith("http") ? "_blank" : undefined}
+            rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+            className="font-mono text-xs text-muted hover:text-ink transition-colors"
+          >
+            {label}
+          </Link>
+        ))}
+      </div>
+      <p className="font-mono text-[10px] text-muted/50">
+        © {new Date().getFullYear()} anhht
+      </p>
+    </div>
   );
 }

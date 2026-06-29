@@ -4,16 +4,29 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { Block } from "@blocknote/core";
+import { getApiBase } from "@/lib/api";
 
 const BlockEditor = dynamic(
   () => import("./BlockEditor").then((m) => m.BlockEditor),
-  { ssr: false, loading: () => <div className="h-[400px] border border-line bg-paper animate-pulse" /> }
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-100 border border-line bg-paper animate-pulse" />
+    ),
+  },
 );
+
+interface ChildCategory {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface Category {
   id: string;
   name: string;
   slug: string;
+  children: ChildCategory[];
 }
 
 interface PostData {
@@ -54,8 +67,21 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
   const [coverImage, setCoverImage] = useState(initialData.coverImage ?? "");
   const [uploading, setUploading] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialData.categoryIds ?? []
+    initialData.categoryIds ?? [],
   );
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    if (initialData.categoryIds?.length) {
+      categories.forEach((parent) => {
+        if (
+          parent.children.some((c) => initialData.categoryIds!.includes(c.id))
+        ) {
+          initial.add(parent.id);
+        }
+      });
+    }
+    return initial;
+  });
   const [blocks, setBlocks] = useState<Block[]>(initialData.content ?? []);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,11 +97,15 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
     setUploading(true);
     setError(null);
     try {
-      const presignRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload`, {
+      const presignRes = await fetch(`${getApiBase()}/upload`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type, size: file.size }),
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          size: file.size,
+        }),
       });
       if (!presignRes.ok) throw new Error("Không lấy được presigned URL");
       const { uploadUrl, publicUrl } = await presignRes.json();
@@ -105,15 +135,29 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
 
   const toggleCategory = (id: string) => {
     setSelectedCategories((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
     );
+  };
+
+  const toggleGroup = (parentId: string) => {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(parentId)) { next.delete(parentId); } else { next.add(parentId); }
+      return next;
+    });
   };
 
   const handleBlocks = useCallback((b: Block[]) => setBlocks(b), []);
 
   async function submit(status: "DRAFT" | "PUBLISHED") {
-    if (!title.trim()) { setError("Tiêu đề không được trống."); return; }
-    if (!slug.trim()) { setError("Slug không được trống."); return; }
+    if (!title.trim()) {
+      setError("Tiêu đề không được trống.");
+      return;
+    }
+    if (!slug.trim()) {
+      setError("Slug không được trống.");
+      return;
+    }
     setError(null);
     setSaving(true);
 
@@ -130,8 +174,8 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
     try {
       const url =
         mode === "create"
-          ? `${process.env.NEXT_PUBLIC_API_URL}/posts`
-          : `${process.env.NEXT_PUBLIC_API_URL}/posts/${initialData.id}`;
+          ? `${getApiBase()}/posts`
+          : `${getApiBase()}/posts/${initialData.id}`;
       const method = mode === "create" ? "POST" : "PATCH";
 
       const res = await fetch(url, {
@@ -156,9 +200,17 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
     }
   }
 
+  const standaloneSelected = categories
+    .filter((p) => p.children.length === 0)
+    .some((p) => selectedCategories.includes(p.id));
+  const childSelected = selectedCategories.some((id) =>
+    categories.some((p) => p.children.some((c) => c.id === id)),
+  );
+
   const inputCls =
     "w-full border border-line bg-paper font-mono text-sm py-2 px-3 outline-none focus:border-ink transition-colors";
-  const labelCls = "block font-mono text-xs uppercase tracking-[1.5px] text-muted mb-1.5";
+  const labelCls =
+    "block font-mono text-xs uppercase tracking-[1.5px] text-muted mb-1.5";
 
   return (
     <div className="max-w-3xl space-y-7">
@@ -184,7 +236,10 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
           <input
             type="text"
             value={slug}
-            onChange={(e) => { setSlugTouched(true); setSlug(e.target.value); }}
+            onChange={(e) => {
+              setSlugTouched(true);
+              setSlug(e.target.value);
+            }}
             placeholder="url-cua-bai-viet"
             className="flex-1 bg-transparent font-mono text-sm py-2 px-3 outline-none"
           />
@@ -199,14 +254,22 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
           <div className="w-40 h-24 border border-line shrink-0 overflow-hidden bg-surface flex items-center justify-center">
             {coverImage ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={coverImage} alt="cover" className="w-full h-full object-cover" />
+              <img
+                src={coverImage}
+                alt="cover"
+                className="w-full h-full object-cover"
+              />
             ) : (
-              <span className="font-mono text-[10px] text-muted">Chưa có ảnh</span>
+              <span className="font-mono text-[10px] text-muted">
+                Chưa có ảnh
+              </span>
             )}
           </div>
           {/* Upload controls */}
           <div className="flex flex-col gap-2">
-            <label className={`${uploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} inline-flex items-center gap-2 border border-line px-4 py-2 font-mono text-sm text-muted hover:text-ink hover:border-ink transition-colors`}>
+            <label
+              className={`${uploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} inline-flex items-center gap-2 border border-line px-4 py-2 font-mono text-sm text-muted hover:text-ink hover:border-ink transition-colors`}
+            >
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif"
@@ -244,28 +307,111 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
       {/* Categories */}
       <div>
         <label className={labelCls}>Danh mục</label>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => {
-            const active = selectedCategories.includes(cat.id);
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => toggleCategory(cat.id)}
-                className={`font-mono text-xs px-3 py-1 border transition-colors ${
-                  active
-                    ? "bg-ink text-paper border-ink"
-                    : "border-line text-muted hover:border-ink hover:text-ink"
-                }`}
-              >
-                {cat.name}
-              </button>
-            );
-          })}
-          {categories.length === 0 && (
-            <p className="font-mono text-xs text-muted">Chưa có danh mục nào.</p>
-          )}
-        </div>
+        {categories.length === 0 ? (
+          <p className="font-mono text-xs text-muted">Chưa có danh mục nào.</p>
+        ) : (
+          <div className="border border-line divide-y divide-line">
+            {categories.map((parent) => {
+              const hasChildren = parent.children.length > 0;
+
+              // Standalone parent (no children) — direct checkbox
+              if (!hasChildren) {
+                const checked = selectedCategories.includes(parent.id);
+                const disabled = childSelected || (standaloneSelected && !checked);
+                return (
+                  <label
+                    key={parent.id}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 transition-colors ${
+                      disabled ? "opacity-35 cursor-not-allowed" : "cursor-pointer group hover:bg-surface"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={disabled}
+                      onChange={() => toggleCategory(parent.id)}
+                      className="sr-only"
+                    />
+                    <span
+                      className={`w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-colors ${
+                        checked ? "bg-ink border-ink" : "border-line group-hover:border-ink"
+                      }`}
+                    >
+                      {checked && (
+                        <span className="text-paper text-[8px] leading-none select-none">✓</span>
+                      )}
+                    </span>
+                    <span className={`font-mono text-xs uppercase tracking-[1px] transition-colors ${checked ? "text-ink" : "text-muted group-hover:text-ink"}`}>
+                      {parent.name}
+                    </span>
+                  </label>
+                );
+              }
+
+              // Parent with children — accordion
+              const isOpen = openGroups.has(parent.id);
+              const selectedCount = parent.children.filter((c) =>
+                selectedCategories.includes(c.id),
+              ).length;
+              const accordionDisabled = standaloneSelected;
+              return (
+                <div key={parent.id} className={accordionDisabled ? "opacity-35" : ""}>
+                  <button
+                    type="button"
+                    onClick={() => !accordionDisabled && toggleGroup(parent.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 transition-colors ${
+                      accordionDisabled ? "cursor-not-allowed" : "hover:bg-surface"
+                    }`}
+                  >
+                    <span className="font-mono text-xs uppercase tracking-[1px] text-ink flex items-center gap-2">
+                      {parent.name}
+                      {selectedCount > 0 && (
+                        <span className="text-[10px] bg-ink text-paper px-1.5 py-0.5 leading-none">
+                          {selectedCount}
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted select-none">
+                      {isOpen ? "▼" : "▶"}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-3 pb-3 pt-1 flex flex-col gap-1.5 bg-surface">
+                      {parent.children.map((child) => {
+                        const checked = selectedCategories.includes(child.id);
+                        return (
+                          <label
+                            key={child.id}
+                            className="flex items-center gap-2.5 cursor-pointer group"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => toggleCategory(child.id)}
+                              className="sr-only"
+                            />
+                            <span
+                              className={`w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-colors ${
+                                checked ? "bg-ink border-ink" : "border-line group-hover:border-ink"
+                              }`}
+                            >
+                              {checked && (
+                                <span className="text-paper text-[8px] leading-none select-none">✓</span>
+                              )}
+                            </span>
+                            <span className={`font-mono text-xs transition-colors ${checked ? "text-ink" : "text-muted group-hover:text-ink"}`}>
+                              {child.name}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Content editor */}
@@ -275,9 +421,7 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
       </div>
 
       {/* Error */}
-      {error && (
-        <p className="font-mono text-xs text-accent-coral">{error}</p>
-      )}
+      {error && <p className="font-mono text-xs text-accent-coral">{error}</p>}
 
       {/* Actions */}
       <div className="flex items-center gap-3 pt-2 border-t border-line">

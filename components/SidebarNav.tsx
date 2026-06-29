@@ -56,7 +56,7 @@ export function SidebarNav({ categories }: { categories: Category[] }) {
   // Tất cả items đều dùng class này, không có -mx-5 — wrapper bên ngoài lo việc đó
   const cls = (active: boolean, large = false) =>
     [
-      "flex w-full items-center gap-1.5 py-1.5 px-5 font-mono transition-colors",
+      "flex w-full items-center gap-6px py-6px px-5 font-mono transition-colors",
       large ? "text-base" : "text-sm",
       active
         ? "text-ink hover:bg-ink/[0.05]"

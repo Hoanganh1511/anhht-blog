@@ -9,17 +9,17 @@ export async function Header() {
   const user = session?.user ?? null;
 
   return (
-    <header className="sticky top-0 z-50 bg-paper/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 bg-paper shadow-[0_1px_0_rgba(0,0,0,0.06)]">
       <div className="px-4">
-        {/* Desktop layout: 3-col grid — logo | nav | user */}
+        {/* Desktop */}
         <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center h-16">
           <Logo />
           <NavMenu />
           <UserNav user={user} />
         </div>
 
-        {/* Mobile layout: logo + hamburger */}
-        <div className="flex md:hidden items-center justify-between h-16">
+        {/* Mobile */}
+        <div className="flex md:hidden items-center justify-between py-10px">
           <Logo />
           <MobileMenu user={user} />
         </div>

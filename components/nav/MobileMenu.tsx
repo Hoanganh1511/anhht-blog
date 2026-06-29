@@ -35,7 +35,7 @@ const itemVariants = {
 
 function HamburgerIcon({ open }: { open: boolean }) {
   return (
-    <div className="relative w-5 h-3.5">
+    <div className="relative w-5 h-14px">
       <motion.span
         className="absolute w-full h-px bg-ink left-0"
         style={{ top: 0 }}
@@ -82,7 +82,7 @@ export function MobileMenu({ user }: Props) {
           className="fixed inset-0 bg-paper z-60 flex flex-col"
         >
           {/* top bar mirrors header */}
-          <div className="flex items-center justify-between h-14 px-4 border-b border-line shrink-0">
+          <div className="flex items-center justify-between h-14 px-4 border-b b-soft shrink-0">
             <span className="font-mono uppercase tracking-[3px] text-sm font-semibold">
               ANHHT BLOG_
             </span>
@@ -106,7 +106,7 @@ export function MobileMenu({ user }: Props) {
                 <Link
                   href={item.href}
                   onClick={close}
-                  className="font-mono uppercase tracking-[1px] text-xl py-3 block border-b border-line/30 hover:text-accent-coral transition-colors"
+                  className="font-mono uppercase tracking-[1px] text-xl py-3 block border-b b-soft hover:text-accent-coral transition-colors"
                 >
                   {item.label}
                 </Link>
@@ -117,7 +117,7 @@ export function MobileMenu({ user }: Props) {
             <motion.div variants={itemVariants}>
               <button
                 onClick={() => setArticlesOpen((v) => !v)}
-                className="w-full flex items-center justify-between font-mono uppercase tracking-[1px] text-xl py-3 border-b border-line/30 cursor-pointer"
+                className="w-full flex items-center justify-between font-mono uppercase tracking-[1px] text-xl py-3 border-b b-soft cursor-pointer"
               >
                 Articles
                 <motion.svg
@@ -147,7 +147,7 @@ export function MobileMenu({ user }: Props) {
                     transition={{ duration: 0.28, ease: EASE }}
                     style={{ overflow: "hidden" }}
                   >
-                    <div className="pl-4 py-2 flex flex-col gap-1 border-b border-line/30">
+                    <div className="pl-4 py-2 flex flex-col gap-1 border-b b-soft">
                       {ARTICLES_ITEMS.map((item) => (
                         <Link
                           key={item.href}
@@ -170,7 +170,7 @@ export function MobileMenu({ user }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.35, duration: 0.3 }}
-            className="px-6 pb-8 pt-4 border-t border-line font-mono text-xs flex flex-col gap-3"
+            className="px-6 pb-8 pt-4 border-t b-soft font-mono text-xs flex flex-col gap-3"
           >
             {user ? (
               <>

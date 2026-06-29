@@ -1,5 +1,7 @@
 "use client";
 
+import { getApiBase } from "@/lib/api";
+
 interface Props {
   provider: "google" | "github";
   children: React.ReactNode;
@@ -8,7 +10,7 @@ interface Props {
 
 export function SignInButton({ provider, children, className }: Props) {
   async function handleSignIn() {
-    const api = process.env.NEXT_PUBLIC_API_URL!;
+    const api = getApiBase();
 
     // Bước 1: Lấy CSRF token từ Express (Auth.js yêu cầu)
     const csrfRes = await fetch(`${api}/auth/csrf`, { credentials: "include" });

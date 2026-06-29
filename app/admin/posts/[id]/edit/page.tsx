@@ -11,6 +11,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  children: { id: string; name: string; slug: string }[];
 }
 
 export default async function EditPostPage({ params }: Props) {
@@ -18,7 +19,7 @@ export default async function EditPostPage({ params }: Props) {
 
   const [postRes, catRes] = await Promise.all([
     serverFetch(`/admin/posts/${id}`),
-    serverFetch("/categories"),
+    serverFetch("/admin/categories"),
   ]);
 
   if (!postRes.ok) notFound();

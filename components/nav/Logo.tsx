@@ -29,7 +29,7 @@ export function Logo() {
       className="w-fit"
     >
       <Link href="/" className="flex items-baseline select-none">
-        <span className="font-mono uppercase tracking-[3px] text-lg font-semibold flex items-baseline">
+        <span className="font-mono uppercase tracking-[2px] md:tracking-[3px] text-xl md:text-[22px] font-bold flex items-baseline">
           {LOGO_TEXT.split("").map((char, i) =>
             char === " " ? (
               <span key={i} className="w-[0.5em]" />
@@ -42,7 +42,7 @@ export function Logo() {
           <motion.span
             animate={{ opacity: [1, 0, 1] }}
             transition={{ duration: 1.1, repeat: Infinity, ease: "linear", times: [0, 0.5, 1] }}
-            className="ml-[2px] text-accent-coral"
+            className="ml-2px text-accent-coral"
           >
             _
           </motion.span>

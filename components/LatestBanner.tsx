@@ -26,13 +26,13 @@ export function LatestBanner({ post }: { post: Post }) {
     >
       <Link
         href={`/blog/${post.slug}`}
-        className="flex items-center gap-3 px-4 md:px-12 xl:px-24 py-2.5 transition-colors hover:bg-paper group"
+        className="flex items-center gap-3 px-4 md:px-12 xl:px-24 py-10px transition-colors hover:bg-paper group"
       >
-        <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[2px] text-accent-coral shrink-0">
+        <span className="flex items-center gap-6px font-mono text-[10px] uppercase tracking-[2px] text-accent-coral shrink-0">
           <motion.span
             animate={{ opacity: [1, 0.15, 1] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="inline-block w-1.5 h-1.5 rounded-full bg-accent-coral"
+            className="inline-block w-6px h-6px rounded-full bg-accent-coral"
           />
           Mới nhất
         </span>

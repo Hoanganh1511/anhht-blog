@@ -1,9 +1,11 @@
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+export function getApiBase(): string {
+  return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+}
 
 export async function apiFetch(path: string, init?: RequestInit) {
-  return fetch(`${BASE}${path}`, {
+  return fetch(`${getApiBase()}${path}`, {
     ...init,
-    credentials: "include", // gửi cookie Auth.js sang Express
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...init?.headers,

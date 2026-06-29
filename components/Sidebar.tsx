@@ -54,7 +54,7 @@ export async function Sidebar() {
       </div>
 
       {/* Social links pinned at bottom */}
-      <div className="px-5 py-5 border-t border-line/20 shrink-0">
+      <div className="px-5 py-5 border-t b-soft shrink-0">
         <div className="flex flex-col gap-3">
           {SOCIALS.map(({ label, href, icon: Icon }) => (
             <a
@@ -62,7 +62,7 @@ export async function Sidebar() {
               href={href}
               target={href.startsWith("http") ? "_blank" : undefined}
               rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="flex items-center gap-2.5 font-mono text-sm text-muted hover:text-ink transition-colors"
+              className="flex items-center gap-10px font-mono text-sm text-muted hover:text-ink transition-colors"
             >
               <Icon />
               {label}

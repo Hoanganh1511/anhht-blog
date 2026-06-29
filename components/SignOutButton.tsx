@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { getApiBase } from "@/lib/api";
 
 interface Props {
   className?: string;
@@ -10,7 +11,7 @@ interface Props {
 
 export function SignOutButton({ className, children, title }: Props) {
   async function handleSignOut() {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
+    await fetch(`${getApiBase()}/logout`, {
       method: "POST",
       credentials: "include",
     });

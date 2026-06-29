@@ -122,7 +122,7 @@ export function UserNav({ user }: Props) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -6, scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 28 }}
-              className="absolute right-0 top-[calc(100%+10px)] w-56 bg-surface border border-line z-50 py-1"
+              className="absolute right-0 top-[calc(100%+10px)] w-56 bg-surface border b-soft z-50 py-1"
               style={{ transformOrigin: "top right" }}
             >
               {MENU_ITEMS.map(({ label, href, icon: Icon }) => (
@@ -130,7 +130,7 @@ export function UserNav({ user }: Props) {
                   key={href}
                   href={href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 font-mono text-sm text-muted hover:text-ink hover:bg-ink/4 transition-colors"
+                  className="flex items-center gap-10px px-4 py-10px font-mono text-sm text-muted hover:text-ink hover:bg-ink/4 transition-colors"
                 >
                   <Icon />
                   {label}
@@ -138,9 +138,9 @@ export function UserNav({ user }: Props) {
               ))}
 
               {/* divider */}
-              <div className="my-1 border-t border-line" />
+              <div className="my-1 border-t b-soft" />
 
-              <SignOutButton className="w-full flex items-center gap-2.5 px-4 py-2.5 font-mono text-sm text-muted hover:text-ink hover:bg-ink/4 transition-colors cursor-pointer">
+              <SignOutButton className="w-full flex items-center gap-10px px-4 py-10px font-mono text-sm text-muted hover:text-ink hover:bg-ink/4 transition-colors cursor-pointer">
                 <IconSignOut />
                 Đăng xuất
               </SignOutButton>

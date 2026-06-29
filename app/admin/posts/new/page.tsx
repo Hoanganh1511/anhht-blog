@@ -7,10 +7,11 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  children: { id: string; name: string; slug: string }[];
 }
 
 export default async function NewPostPage() {
-  const res = await serverFetch("/categories");
+  const res = await serverFetch("/admin/categories");
   const categories: Category[] = res.ok ? await res.json() : [];
 
   return (

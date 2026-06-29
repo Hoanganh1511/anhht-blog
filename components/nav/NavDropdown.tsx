@@ -44,7 +44,7 @@ export function NavDropdown({ label, items, className }: NavDropdownProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button className="flex items-center gap-1.5 font-mono text-sm uppercase tracking-[1px] cursor-pointer select-none outline-none">
+      <button className="flex items-center gap-6px font-mono text-sm uppercase tracking-[1px] cursor-pointer select-none outline-none">
         {label}
         <motion.svg
           animate={{ rotate: open ? 180 : 0 }}
@@ -74,10 +74,10 @@ export function NavDropdown({ label, items, className }: NavDropdownProps) {
             exit="hidden"
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformOrigin: "top center" }}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-surface border border-line min-w-[160px] py-1.5 z-50"
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-3 bg-surface border b-soft min-w-[160px] py-6px z-50"
           >
             {/* top pointer */}
-            <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 border-l border-t border-line bg-surface rotate-45" />
+            <div className="absolute -top-[5px] left-1/2 -translate-x-1/2 w-10px h-10px border-l border-t b-soft bg-surface rotate-45" />
 
             <motion.div
               variants={{ show: { transition: { staggerChildren: 0.055, delayChildren: 0.05 } } }}

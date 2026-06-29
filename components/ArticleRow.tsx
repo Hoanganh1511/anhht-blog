@@ -33,7 +33,7 @@ export function ArticleRow({ post, index }: Props) {
         hover: { backgroundColor: "var(--surface)" },
       }}
       transition={{ duration: 0.15 }}
-      className="-mx-2 px-2 border-b border-line"
+      className="-mx-2 px-2 border-b b-soft"
     >
       <Link href={`/blog/${post.slug}`} className="flex items-center gap-4 py-3">
         {/* số thứ tự */}

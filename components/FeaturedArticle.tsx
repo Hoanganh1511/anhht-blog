@@ -23,10 +23,10 @@ export function FeaturedArticle({ post }: { post: Post }) {
     : null;
 
   return (
-    <motion.div initial="rest" animate="rest" whileHover="hover" className="py-7 border-b border-line">
+    <motion.div initial="rest" animate="rest" whileHover="hover" className="py-7 border-b b-soft">
       <Link href={`/blog/${post.slug}`} className="block">
         {/* title + animated underline */}
-        <div className="relative pb-0.5">
+        <div className="relative pb-2px">
           <h2 className="font-sans text-2xl font-semibold leading-tight">
             {post.title}
           </h2>
@@ -39,7 +39,7 @@ export function FeaturedArticle({ post }: { post: Post }) {
         </div>
 
         {post.excerpt && (
-          <p className="font-sans text-sm text-muted mt-2.5 line-clamp-2 leading-relaxed">
+          <p className="font-sans text-sm text-muted mt-10px line-clamp-2 leading-relaxed">
             {post.excerpt}
           </p>
         )}
