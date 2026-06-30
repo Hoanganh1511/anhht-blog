@@ -10,7 +10,9 @@ interface PostData {
   excerpt: string | null;
   publishedAt: string | null;
   coverImage?: string | null;
-  likes: unknown[];
+  likesCount: number;
+  likedByMe: boolean;
+  savedByMe: boolean;
 }
 
 interface CategoryData {
@@ -23,6 +25,7 @@ interface CategoryData {
 
 export default async function HomePage() {
   const [res, session] = await Promise.all([serverFetch("/categories"), getSession()]);
+
   const categories: CategoryData[] = res.ok ? await res.json() : [];
   const authorImage = session?.user?.image ?? null;
   const authorName = session?.user?.name ?? "Tuấn Anh";
@@ -52,6 +55,7 @@ export default async function HomePage() {
               variant={i === 0 ? "cards" : "list"}
               authorImage={authorImage}
               authorName={authorName}
+              isLoggedIn={!!session}
             />
           ))}
         </div>

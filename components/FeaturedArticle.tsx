@@ -10,7 +10,7 @@ interface Post {
   title: string;
   excerpt: string | null;
   publishedAt: string | null;
-  likes: unknown[];
+  likesCount: number;
 }
 
 export function FeaturedArticle({ post }: { post: Post }) {
@@ -46,7 +46,7 @@ export function FeaturedArticle({ post }: { post: Post }) {
 
         <div className="flex items-center gap-4 mt-4 font-mono text-xs text-muted">
           {date && <span>{date}</span>}
-          <span>♥ {post.likes.length}</span>
+          <span>♥ {post.likesCount}</span>
           <motion.span
             variants={{ rest: { x: 0, opacity: 0 }, hover: { x: 0, opacity: 1 } }}
             transition={{ duration: 0.2 }}

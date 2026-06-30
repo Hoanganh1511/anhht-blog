@@ -6,6 +6,7 @@ import { PostContentClient } from "@/components/PostContentClient";
 import { CoverGallery } from "@/components/CoverGallery";
 import { TableOfContents, type HeadingItem } from "@/components/TableOfContents";
 import { StickyAuthorBar } from "@/components/StickyAuthorBar";
+import { PostReactions } from "@/components/PostReactions";
 import type { Metadata } from "next";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -89,7 +90,6 @@ export default async function BlogPostPage({ params }: Props) {
                 })}
               </time>
             )}
-            <span>♥ {post._count?.likes ?? 0}</span>
             <span>👁 {post.viewCount}</span>
           </div>
         </header>
@@ -100,6 +100,14 @@ export default async function BlogPostPage({ params }: Props) {
         <TableOfContents headings={headings} />
 
         <PostContentClient blocks={post.content ?? []} />
+
+        <PostReactions
+          postId={post.id}
+          initialLiked={post.likedByMe ?? false}
+          initialCount={post._count?.likes ?? 0}
+          initialSaved={post.savedByMe ?? false}
+          isLoggedIn={!!session}
+        />
       </article>
 
       <section className="mt-16 border-t border-line pt-8">

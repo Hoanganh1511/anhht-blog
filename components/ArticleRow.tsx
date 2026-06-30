@@ -7,7 +7,7 @@ interface Post {
   slug: string;
   title: string;
   publishedAt: string | null;
-  likes: unknown[];
+  likesCount: number;
 }
 
 interface Props {
@@ -53,7 +53,7 @@ export function ArticleRow({ post, index }: Props) {
 
         {/* lượt thích */}
         <span className="font-mono text-[11px] text-muted shrink-0 tabular-nums hidden xs:flex items-center gap-1">
-          ♥ {post.likes.length}
+          ♥ {post.likesCount}
         </span>
 
         {/* arrow */}

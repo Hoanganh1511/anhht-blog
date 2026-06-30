@@ -98,7 +98,7 @@ function PostListItem({
               <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M8 14s-6-3.5-6-7.5a4 4 0 0 1 6-3.46A4 4 0 0 1 14 6.5C14 10.5 8 14 8 14z" />
               </svg>
-              {post.likes.length}
+              {post.likesCount}
             </span>
             {/* bookmark */}
             <span className="flex items-center">
@@ -148,6 +148,7 @@ export function CategorySection({
   variant = "cards",
   authorImage,
   authorName,
+  isLoggedIn = false,
 }: {
   category: CategoryData;
   parentName?: string;
@@ -155,6 +156,7 @@ export function CategorySection({
   variant?: "cards" | "list";
   authorImage?: string | null;
   authorName?: string;
+  isLoggedIn?: boolean;
 }) {
   const posts = category.posts.map((r) => r.post);
   if (posts.length === 0) return null;
@@ -230,7 +232,7 @@ export function CategorySection({
                 },
               }}
             >
-              <ArticleCard post={post} />
+              <ArticleCard post={post} isLoggedIn={isLoggedIn} />
             </motion.div>
           ))}
         </motion.div>
