@@ -33,6 +33,7 @@ export default async function EditPostPage({ params }: Props) {
     slug: post.slug,
     excerpt: post.excerpt ?? "",
     coverImage: post.coverImage ?? "",
+    coverImages: (post.coverImages ?? []) as string[],
     content: (post.content ?? []) as Block[],
     status: post.status as "DRAFT" | "PUBLISHED",
     categoryIds: (post.categories ?? []).map(

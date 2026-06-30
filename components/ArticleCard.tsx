@@ -50,15 +50,15 @@ export function ArticleCard({ post }: { post: ArticlePost }) {
       initial="rest"
       animate="rest"
       whileHover="hover"
-      className="shrink-0 w-40 sm:w-64 md:w-72 flex flex-col"
+      className="shrink-0 w-44 sm:w-52 md:w-60 flex flex-col"
     >
       <Link href={`/blog/${post.slug}`} className="flex flex-col">
-        <div className="overflow-hidden mb-10px sm:mb-3 shrink-0 rounded-lg">
+        <div className="overflow-hidden mb-10px sm:mb-3 shrink-0 rounded-lg" style={{ aspectRatio: "9/16" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <motion.img
             src={imgSrc}
             alt={post.title}
-            className="w-full h-24 sm:h-36 md:h-40 object-cover"
+            className="w-full h-full object-cover"
             variants={{ rest: { scale: 1 }, hover: { scale: 1.05 } }}
             transition={{ duration: 0.5, ease: EASE }}
           />

@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { Block } from "@blocknote/core";
-import { getApiBase } from "@/lib/api";
+import { getPresignedUploadUrl, createPost, updatePost } from "@/app/actions/admin";
 
 const BlockEditor = dynamic(
   () => import("./BlockEditor").then((m) => m.BlockEditor),
@@ -35,8 +35,10 @@ interface PostData {
   slug?: string;
   excerpt?: string;
   coverImage?: string;
+  coverImages?: string[];
   content?: Block[];
   status?: "DRAFT" | "PUBLISHED";
+  featured?: boolean;
   categoryIds?: string[];
 }
 
@@ -82,6 +84,9 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
     }
     return initial;
   });
+  const [galleryImages, setGalleryImages] = useState<string[]>(initialData.coverImages ?? []);
+  const [uploadingGallery, setUploadingGallery] = useState(false);
+  const [featured, setFeatured] = useState(initialData.featured ?? false);
   const [blocks, setBlocks] = useState<Block[]>(initialData.content ?? []);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,18 +102,11 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
     setUploading(true);
     setError(null);
     try {
-      const presignRes = await fetch(`${getApiBase()}/upload`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-          size: file.size,
-        }),
-      });
-      if (!presignRes.ok) throw new Error("Không lấy được presigned URL");
-      const { uploadUrl, publicUrl } = await presignRes.json();
+      const { uploadUrl, publicUrl } = await getPresignedUploadUrl(
+        file.name,
+        file.type,
+        file.size,
+      );
 
       const s3Res = await fetch(uploadUrl, {
         method: "PUT",
@@ -125,6 +123,36 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
       setError(e instanceof Error ? e.message : "Upload thất bại");
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    e.target.value = "";
+
+    setUploadingGallery(true);
+    try {
+      const uploaded = await Promise.all(
+        files.map(async (file) => {
+          const localUrl = URL.createObjectURL(file);
+          try {
+            const { uploadUrl, publicUrl } = await getPresignedUploadUrl(file.name, file.type, file.size);
+            const s3Res = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+            if (!s3Res.ok) throw new Error("Upload S3 thất bại");
+            URL.revokeObjectURL(localUrl);
+            return publicUrl;
+          } catch {
+            URL.revokeObjectURL(localUrl);
+            throw new Error(`Upload thất bại: ${file.name}`);
+          }
+        }),
+      );
+      setGalleryImages((prev) => [...prev, ...uploaded].slice(0, 8));
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Upload thất bại");
+    } finally {
+      setUploadingGallery(false);
     }
   }
 
@@ -166,31 +194,18 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
       slug: slug.trim(),
       excerpt: excerpt.trim() || undefined,
       coverImage: coverImage.trim() || undefined,
+      coverImages: galleryImages,
       content: blocks,
       status,
+      featured,
       categoryIds: selectedCategories,
     };
 
     try {
-      const url =
+      const post =
         mode === "create"
-          ? `${getApiBase()}/posts`
-          : `${getApiBase()}/posts/${initialData.id}`;
-      const method = mode === "create" ? "POST" : "PATCH";
-
-      const res = await fetch(url, {
-        method,
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `Lỗi ${res.status}`);
-      }
-
-      const post = await res.json();
+          ? await createPost(payload)
+          : await updatePost(initialData!.id!, payload);
       router.push(`/admin/posts/${post.id}/edit`);
       router.refresh();
     } catch (e: unknown) {
@@ -268,7 +283,7 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
           {/* Upload controls */}
           <div className="flex flex-col gap-2">
             <label
-              className={`${uploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} inline-flex items-center gap-2 border border-line px-4 py-2 font-mono text-sm text-muted hover:text-ink hover:border-ink transition-colors`}
+              className={`${uploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} inline-flex items-center gap-2 border border-line rounded-sm px-4 py-2 font-mono text-sm text-muted hover:text-ink hover:border-ink transition-colors`}
             >
               <input
                 type="file"
@@ -292,6 +307,42 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
         </div>
       </div>
 
+      {/* Gallery images */}
+      <div>
+        <label className={labelCls}>Ảnh bổ sung <span className="normal-case text-muted/60">({galleryImages.length}/8)</span></label>
+        <div className="flex flex-wrap gap-2 items-end">
+          {galleryImages.map((src, i) => (
+            <div key={i} className="relative shrink-0 border border-line overflow-hidden" style={{ width: 56, aspectRatio: "9/16" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => setGalleryImages((prev) => prev.filter((_, j) => j !== i))}
+                className="absolute top-0.5 right-0.5 w-4 h-4 bg-ink/80 text-paper rounded-full flex items-center justify-center leading-none text-[10px] hover:bg-ink cursor-pointer"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          {galleryImages.length < 8 && (
+            <label
+              className={`shrink-0 border border-dashed border-line flex items-center justify-center text-xl text-muted transition-colors ${uploadingGallery ? "opacity-50 cursor-not-allowed" : "hover:border-ink hover:text-ink cursor-pointer"}`}
+              style={{ width: 56, aspectRatio: "9/16" }}
+            >
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="sr-only"
+                disabled={uploadingGallery}
+                onChange={handleGalleryUpload}
+              />
+              {uploadingGallery ? "..." : "+"}
+            </label>
+          )}
+        </div>
+      </div>
+
       {/* Excerpt */}
       <div>
         <label className={labelCls}>Tóm tắt</label>
@@ -303,6 +354,28 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
           className={`${inputCls} resize-none`}
         />
       </div>
+
+      {/* Featured */}
+      <label className="flex items-center gap-3 cursor-pointer group w-fit">
+        <span
+          className={`w-3.5 h-3.5 border shrink-0 flex items-center justify-center transition-colors ${
+            featured ? "bg-ink border-ink" : "border-line group-hover:border-ink"
+          }`}
+        >
+          {featured && (
+            <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+              <path d="M1 3l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </span>
+        <input
+          type="checkbox"
+          checked={featured}
+          onChange={(e) => setFeatured(e.target.checked)}
+          className="sr-only"
+        />
+        <span className="font-mono text-sm text-ink">Bài viết nổi bật</span>
+      </label>
 
       {/* Categories */}
       <div>
@@ -429,7 +502,7 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
           type="button"
           disabled={saving}
           onClick={() => submit("DRAFT")}
-          className="font-mono text-sm border border-line px-5 py-2 text-muted hover:text-ink hover:border-ink transition-colors disabled:opacity-50"
+          className="font-mono text-sm border border-line rounded-sm px-5 py-2 text-muted hover:text-ink hover:border-ink transition-colors disabled:opacity-50"
         >
           {saving ? "Đang lưu..." : "Lưu nháp"}
         </button>
@@ -437,7 +510,7 @@ export function PostForm({ mode, initialData = {}, categories }: Props) {
           type="button"
           disabled={saving}
           onClick={() => submit("PUBLISHED")}
-          className="font-mono text-sm bg-ink text-paper px-5 py-2 hover:opacity-80 transition-opacity disabled:opacity-50"
+          className="font-mono text-sm bg-ink text-paper rounded-sm px-5 py-2 hover:opacity-80 transition-opacity disabled:opacity-50"
         >
           {saving ? "Đang lưu..." : "Xuất bản"}
         </button>

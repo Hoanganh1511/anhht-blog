@@ -15,7 +15,7 @@ export async function Header() {
         <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center h-16">
           <Logo />
           <NavMenu />
-          <UserNav user={user} />
+          <UserNav user={user} isAdmin={user?.role === "ADMIN"} />
         </div>
 
         {/* Mobile */}

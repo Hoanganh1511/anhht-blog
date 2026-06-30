@@ -8,13 +8,38 @@ import type { SessionUser } from "@/lib/session";
 
 interface Props {
   user: SessionUser | null;
+  isAdmin?: boolean;
+}
+
+function IconPencil() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path
+        d="M2 12.5L4.5 10l7-7 2 2-7 7-2.5 2.5H2v-2.5z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M11.5 3l1.5 1.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
 function IconAccount() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
       <circle cx="8" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.4" />
-      <path d="M2.5 14c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M2.5 14c0-3.038 2.462-5.5 5.5-5.5s5.5 2.462 5.5 5.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -22,8 +47,18 @@ function IconAccount() {
 function IconCreative() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path d="M2 12.5L4.5 10l7-7 2 2-7 7-2.5 2.5H2v-2.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-      <path d="M11.5 3l1.5 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <path
+        d="M2 12.5L4.5 10l7-7 2 2-7 7-2.5 2.5H2v-2.5z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M11.5 3l1.5 1.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -32,7 +67,12 @@ function IconSettings() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
       <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M12.95 3.05l-1.06 1.06M4.11 11.89l-1.06 1.06" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      <path
+        d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M12.95 3.05l-1.06 1.06M4.11 11.89l-1.06 1.06"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -40,9 +80,28 @@ function IconSettings() {
 function IconSignOut() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path d="M6 14H2.5A1.5 1.5 0 0 1 1 12.5v-9A1.5 1.5 0 0 1 2.5 2H6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      <path d="M11 11l3-3-3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      <line x1="14" y1="8" x2="6" y2="8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M6 14H2.5A1.5 1.5 0 0 1 1 12.5v-9A1.5 1.5 0 0 1 2.5 2H6"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M11 11l3-3-3-3"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <line
+        x1="14"
+        y1="8"
+        x2="6"
+        y2="8"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -53,7 +112,7 @@ const MENU_ITEMS = [
   { label: "Cài đặt", href: "/settings", icon: IconSettings },
 ];
 
-export function UserNav({ user }: Props) {
+export function UserNav({ user, isAdmin }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -93,7 +152,7 @@ export function UserNav({ user }: Props) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.25, duration: 0.3 }}
-      className="flex justify-end"
+      className="flex items-center justify-end gap-7.5"
     >
       <div ref={ref} className="relative">
         {/* Trigger: avatar + name */}
@@ -148,6 +207,15 @@ export function UserNav({ user }: Props) {
           )}
         </AnimatePresence>
       </div>
+      {isAdmin && (
+        <Link
+          href="/admin/posts/new"
+          className="flex items-center gap-1.5 font-mono text-xs bg-ink text-paper px-3 py-1.5 rounded-sm hover:opacity-80 transition-opacity"
+        >
+          <IconPencil />
+          Bài mới
+        </Link>
+      )}
     </motion.div>
   );
 }

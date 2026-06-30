@@ -53,10 +53,10 @@ export function SidebarNav({ categories }: { categories: Category[] }) {
       return next;
     });
 
-  // Tất cả items đều dùng class này, không có -mx-5 — wrapper bên ngoài lo việc đó
+  // Tất cả items đều dùng class này, không có -mx-6 — wrapper bên ngoài lo việc đó
   const cls = (active: boolean, large = false) =>
     [
-      "flex w-full items-center gap-6px py-6px px-5 font-mono transition-colors",
+      "flex w-full items-center gap-6px py-1 px-6 font-mono transition-colors",
       large ? "text-base" : "text-sm",
       active
         ? "text-ink hover:bg-ink/[0.05]"
@@ -70,7 +70,7 @@ export function SidebarNav({ categories }: { categories: Category[] }) {
         <p className="font-mono text-[0.7rem] uppercase tracking-[2px] text-muted mb-3">
           Khám phá
         </p>
-        <nav className="-mx-5">
+        <nav className="-mx-6">
           {EXPLORE.map(({ label, href }) => (
             <Link key={href} href={href} className={cls(path === href, true)}>
               {label}
@@ -84,7 +84,7 @@ export function SidebarNav({ categories }: { categories: Category[] }) {
         <p className="font-mono text-[0.7rem] uppercase tracking-[2px] text-muted mb-3">
           Chủ đề
         </p>
-        <nav className="-mx-5">
+        <nav className="-mx-6">
           {roots.map((root) => {
             const rootHref = `/category/${root.slug}`;
             const children = childrenOf(root.id);

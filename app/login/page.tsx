@@ -13,14 +13,14 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3">
           <SignInButton
             provider="google"
-            className="w-full border border-line bg-paper font-mono text-sm py-2 px-4 hover:bg-ink hover:text-paper transition-colors"
+            className="w-full border border-line bg-paper font-mono text-sm py-2 px-4 rounded-sm hover:bg-ink hover:text-paper transition-colors"
           >
             Tiếp tục với Google
           </SignInButton>
 
           <SignInButton
             provider="github"
-            className="w-full border border-line bg-paper font-mono text-sm py-2 px-4 hover:bg-ink hover:text-paper transition-colors"
+            className="w-full border border-line bg-paper font-mono text-sm py-2 px-4 rounded-sm hover:bg-ink hover:text-paper transition-colors"
           >
             Tiếp tục với GitHub
           </SignInButton>

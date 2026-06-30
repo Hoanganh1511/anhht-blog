@@ -1,60 +1,56 @@
 import { serverFetch } from "@/lib/server-api";
+import { AdminActivity } from "@/components/admin/AdminActivity";
 
-export default async function AdminDashboard() {
-  const res = await serverFetch("/admin/posts");
-  const posts = res.ok ? await res.json() : [];
+export const metadata = { title: "Dashboard — Admin" };
+
+interface Stats {
+  total: number;
+  published: number;
+  draft: number;
+  thisMonth: number;
+  thisWeek: number;
+  today: number;
+  daily: { date: string; count: number; posts: { id: string; title: string; slug: string; status: string }[] }[];
+}
+
+const STAT_CARDS = [
+  { label: "Tổng bài", key: "total" },
+  { label: "Đã đăng", key: "published" },
+  { label: "Tháng này", key: "thisMonth" },
+  { label: "Tuần này", key: "thisWeek" },
+] as const;
+
+export default async function AdminDashboardPage() {
+  const res = await serverFetch("/admin/stats");
+  const stats: Stats = res.ok
+    ? await res.json()
+    : { total: 0, published: 0, draft: 0, thisMonth: 0, thisWeek: 0, today: 0, daily: [] };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-mono uppercase tracking-[2px] text-lg">Bài viết</h1>
-        <a
-          href="/admin/posts/new"
-          className="font-mono text-xs border border-line bg-ink text-paper px-4 py-2 hover:opacity-80 transition-opacity"
-        >
-          + Bài mới
-        </a>
+    <div className="bg-paper rounded px-6 py-6">
+      <h1 className="font-mono uppercase tracking-[2px] text-lg mb-8">Dashboard</h1>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 gap-4 mb-10">
+        {STAT_CARDS.map(({ label, key }) => (
+          <div key={key} className="rounded p-4" style={{ backgroundColor: "#F7F7F7" }}>
+            <div className="font-mono text-3xl font-bold text-ink mb-1">
+              {stats[key]}
+            </div>
+            <div className="font-mono text-xs text-muted uppercase tracking-wider">
+              {label}
+            </div>
+          </div>
+        ))}
       </div>
 
-      <table className="w-full border-collapse font-sans text-sm">
-        <thead>
-          <tr className="border-b border-line">
-            <th className="text-left py-2 pr-4 font-mono text-xs text-muted uppercase tracking-wider">Tiêu đề</th>
-            <th className="text-left py-2 pr-4 font-mono text-xs text-muted uppercase tracking-wider">Trạng thái</th>
-            <th className="text-left py-2 pr-4 font-mono text-xs text-muted uppercase tracking-wider">Danh mục</th>
-            <th className="text-left py-2 font-mono text-xs text-muted uppercase tracking-wider">Cập nhật</th>
-          </tr>
-        </thead>
-        <tbody>
-          {posts.map((post: any) => (
-            <tr key={post.id} className="border-b border-line hover:bg-surface">
-              <td className="py-3 pr-4">
-                <a href={`/admin/posts/${post.id}/edit`} className="hover:underline font-medium">
-                  {post.title}
-                </a>
-              </td>
-              <td className="py-3 pr-4">
-                <span className={[
-                  "font-mono text-xs px-2 py-0.5 border",
-                  post.status === "PUBLISHED" ? "border-accent-blue text-accent-blue" : "border-muted text-muted",
-                ].join(" ")}>
-                  {post.status === "PUBLISHED" ? "Đã đăng" : "Nháp"}
-                </span>
-              </td>
-              <td className="py-3 pr-4 font-mono text-xs text-muted">
-                {post.categories.map((c: any) => c.category.name).join(", ") || "—"}
-              </td>
-              <td className="py-3 font-mono text-xs text-muted">
-                {new Date(post.updatedAt).toLocaleDateString("vi-VN")}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {posts.length === 0 && (
-        <p className="font-mono text-xs text-muted mt-6">Chưa có bài viết nào.</p>
-      )}
+      {/* Activity */}
+      <div>
+        <h2 className="font-mono text-xs text-muted uppercase tracking-wider mb-4">
+          Hoạt động 30 ngày qua
+        </h2>
+        <AdminActivity daily={stats.daily} />
+      </div>
     </div>
   );
 }

@@ -92,46 +92,46 @@ function PostListItem({
           <p className="text-sm font-semibold leading-snug line-clamp-2 group-hover:text-accent-blue transition-colors">
             {post.title}
           </p>
-          <div className="flex items-center justify-between mt-6px text-xs text-muted/70">
+          <div className="flex items-center gap-2 mt-6px text-xs text-muted">
+            {/* ♡ likes */}
             <span className="flex items-center gap-1">
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M8 14s-6-3.5-6-7.5a4 4 0 0 1 6-3.46A4 4 0 0 1 14 6.5C14 10.5 8 14 8 14z" />
               </svg>
               {post.likes.length}
             </span>
-            <div className="flex items-center gap-6px shrink-0">
-              {authorImage && (
-                <div className="w-5 h-5 rounded-full overflow-hidden bg-surface shrink-0">
-                  <Image
-                    src={authorImage}
-                    alt={authorName ?? ""}
-                    width={20}
-                    height={20}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
-              <span className="text-ink/60">{authorName ?? "Tuấn Anh"}</span>
-              {post.publishedAt && <span>· {timeAgo(post.publishedAt)}</span>}
-            </div>
+            {/* bookmark */}
+            <span className="flex items-center">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round">
+                <path d="M3 2h10a1 1 0 0 1 1 1v11l-5-3-5 3V3a1 1 0 0 1 1-1z" />
+              </svg>
+            </span>
+            {/* avatar */}
+            {authorImage && (
+              <div className="w-4 h-4 rounded-full overflow-hidden bg-surface shrink-0">
+                <Image src={authorImage} alt={authorName ?? ""} width={16} height={16} className="w-full h-full object-cover" />
+              </div>
+            )}
+            {/* name */}
+            <span>{authorName ?? "Tuấn Anh"}</span>
+            {/* separator + time */}
+            {post.publishedAt && (
+              <>
+                <span style={{ color: "#D4D4D4" }}>|</span>
+                <span>{timeAgo(post.publishedAt)}</span>
+              </>
+            )}
           </div>
         </div>
 
         {/* Thumbnail */}
         {post.coverImage && (
-          <div className="shrink-0 w-24 h-16 rounded-lg overflow-hidden bg-surface">
+          <div className="shrink-0 w-12 rounded-lg overflow-hidden bg-surface" style={{ aspectRatio: "9/16" }}>
             <Image
               src={post.coverImage}
               alt={post.title}
-              width={56}
-              height={56}
+              width={48}
+              height={85}
               className="w-full h-full object-cover"
             />
           </div>

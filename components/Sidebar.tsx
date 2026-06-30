@@ -47,14 +47,14 @@ export async function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col w-44 xl:w-48 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
-      <div className="flex-1 px-5 py-7 space-y-8 overflow-y-auto no-scrollbar">
+      <div className="flex-1 px-6 py-7 space-y-8 overflow-y-auto no-scrollbar">
 
         <SidebarNav categories={categories} />
 
       </div>
 
       {/* Social links pinned at bottom */}
-      <div className="px-5 py-5 border-t b-soft shrink-0">
+      <div className="px-6 py-5 border-t b-soft shrink-0">
         <div className="flex flex-col gap-3">
           {SOCIALS.map(({ label, href, icon: Icon }) => (
             <a

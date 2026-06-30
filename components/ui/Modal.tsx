@@ -59,7 +59,7 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
       type="button"
       onClick={onClose}
       aria-label="Đóng"
-      className="w-8 h-8 flex items-center justify-center text-muted hover:text-ink rounded-full btn-ghost-hover transition-colors shrink-0"
+      className="w-8 h-8 flex items-center justify-center text-muted hover:text-ink rounded-sm btn-ghost-hover transition-colors shrink-0"
     >
       <CloseIcon />
     </button>
@@ -91,13 +91,15 @@ export function Modal({ isOpen, onClose, title, children, size = "md" }: ModalPr
             {title ? (
               /* ── titled modal ── */
               <>
-                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b b-soft">
-                  <h2 className="font-mono text-xs font-semibold tracking-widest uppercase text-muted">
+                {/* Centered title — spacer div mirrors close button width so title is truly centered */}
+                <div className="flex items-center px-4 pt-5 pb-4 border-b b-soft">
+                  <div className="w-8 shrink-0" />
+                  <h2 className="flex-1 text-center font-mono text-sm font-semibold text-ink">
                     {title}
                   </h2>
                   {closeBtn}
                 </div>
-                <div className="p-6">{children}</div>
+                <div className="px-6 py-5">{children}</div>
               </>
             ) : (
               /* ── no-title modal: close btn in-flow (top-right via flex) ── */

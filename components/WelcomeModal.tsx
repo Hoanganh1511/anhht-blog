@@ -93,7 +93,7 @@ function WelcomeContent({ onExplore }: { onExplore: () => void }) {
         <motion.button
           type="button"
           onClick={onExplore}
-          className="border b-soft rounded-full font-mono text-sm text-ink px-8 py-2 transition-colors cursor-pointer btn-primary-hover"
+          className="border b-soft rounded-sm font-mono text-sm text-ink px-8 py-2 transition-colors cursor-pointer btn-primary-hover"
           whileTap={{ scale: 0.97 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
         >
