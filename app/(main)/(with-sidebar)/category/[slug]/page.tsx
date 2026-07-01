@@ -48,7 +48,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     <>
       <MobileCategoryBar categories={allCategories} />
       <main className="px-4 md:px-8 xl:px-12 pt-4 pb-10">
-        {/* Section header — same style as CategorySection */}
         <div className="mb-5">
           <h1 className="font-mono uppercase tracking-[3px] text-md font-bold">
             {category.parent && (

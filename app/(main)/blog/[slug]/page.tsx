@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { serverFetch } from "@/lib/server-api";
 import { getSession } from "@/lib/session";
 import { BackButton } from "@/components/BackButton";
@@ -64,15 +65,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const [res, session] = await Promise.all([
+  const [res, authorRes, session] = await Promise.all([
     serverFetch(`/posts/${slug}`),
+    serverFetch("/users/author"),
     getSession(),
   ]);
   if (res.status === 404) notFound();
   const post = await res.json();
+  const author = authorRes.ok ? await authorRes.json() : { name: null, image: null, bio: null };
 
-  const authorName = session?.user?.name ?? "Tuấn Anh";
-  const authorImage = session?.user?.image ?? null;
+  const authorName = author.name ?? session?.user?.name ?? "Tuấn Anh";
+  const authorImage = author.image ?? session?.user?.image ?? null;
+  const authorBio: string | null = author.bio ?? null;
   const headings = extractHeadings(post.content ?? []);
 
   return (
@@ -148,9 +152,37 @@ export default async function BlogPostPage({ params }: Props) {
         authorName={authorName}
       />
 
-      <PostAuthorCard name={authorName} image={authorImage} />
+      <PostAuthorCard name={authorName} image={authorImage} bio={authorBio} />
 
-      <section className="mt-8 border-t border-line pt-8">
+      {post.categories?.length > 0 && (
+        <div className="flex flex-wrap gap-y-2 gap-x-0 border-t border-line-primary py-5 mt-2">
+          {post.categories.map(
+            ({
+              category,
+            }: {
+              category: { id: string; name: string; slug: string };
+            }) => (
+              <div
+                key={category.id}
+                className="flex items-center gap-1.5 font-mono text-[14px] text-muted mr-4"
+              >
+                <Link href="/" className="hover:text-ink transition-colors">
+                  Trang chủ
+                </Link>
+                <span className="text-muted/50">›</span>
+                <Link
+                  href={`/category/${category.slug}`}
+                  className="hover:text-ink transition-colors"
+                >
+                  {category.name}
+                </Link>
+              </div>
+            ),
+          )}
+        </div>
+      )}
+
+      <section className=" border-t border-line-primary pt-8">
         <h2 className="font-mono uppercase tracking-[2px] text-sm mb-4">
           Bình luận
         </h2>

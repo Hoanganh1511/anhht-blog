@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { User, Settings, LogOut, LayoutDashboard } from "lucide-react";
 import { SignOutButton } from "@/components/SignOutButton";
 import type { SessionUser } from "@/lib/session";
 
@@ -39,7 +41,11 @@ function HamburgerIcon({ open }: { open: boolean }) {
       <motion.span
         className="absolute w-full h-px bg-ink left-0"
         style={{ top: 0 }}
-        animate={{ top: open ? "50%" : 0, rotate: open ? 45 : 0, translateY: open ? "-50%" : 0 }}
+        animate={{
+          top: open ? "50%" : 0,
+          rotate: open ? 45 : 0,
+          translateY: open ? "-50%" : 0,
+        }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       />
       <motion.span
@@ -51,7 +57,11 @@ function HamburgerIcon({ open }: { open: boolean }) {
       <motion.span
         className="absolute w-full h-px bg-ink left-0"
         style={{ bottom: 0 }}
-        animate={{ bottom: open ? "50%" : 0, rotate: open ? -45 : 0, translateY: open ? "50%" : 0 }}
+        animate={{
+          bottom: open ? "50%" : 0,
+          rotate: open ? -45 : 0,
+          translateY: open ? "50%" : 0,
+        }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       />
     </div>
@@ -96,7 +106,7 @@ export function MobileMenu({ user }: Props) {
             variants={menuVariants}
             initial="hidden"
             animate="show"
-            className="flex-1 flex flex-col px-6 pt-10 gap-1"
+            className="flex-1 flex flex-col px-6 pt-6 gap-1"
           >
             {[
               { label: "Home", href: "/" },
@@ -106,7 +116,7 @@ export function MobileMenu({ user }: Props) {
                 <Link
                   href={item.href}
                   onClick={close}
-                  className="font-mono uppercase tracking-[1px] text-xl py-3 block border-b b-soft hover:text-accent-coral transition-colors"
+                  className="font-mono uppercase tracking-[1px] text-sm py-3 block border-b b-soft hover:text-accent-coral transition-colors"
                 >
                   {item.label}
                 </Link>
@@ -117,7 +127,7 @@ export function MobileMenu({ user }: Props) {
             <motion.div variants={itemVariants}>
               <button
                 onClick={() => setArticlesOpen((v) => !v)}
-                className="w-full flex items-center justify-between font-mono uppercase tracking-[1px] text-xl py-3 border-b b-soft cursor-pointer"
+                className="w-full flex items-center justify-between font-mono uppercase tracking-[1px] text-sm py-3 border-b b-soft cursor-pointer"
               >
                 Articles
                 <motion.svg
@@ -170,22 +180,74 @@ export function MobileMenu({ user }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.35, duration: 0.3 }}
-            className="px-6 pb-8 pt-4 border-t b-soft font-mono text-xs flex flex-col gap-3"
+            className="border-t b-soft"
           >
             {user ? (
               <>
-                <span className="text-muted">{user.email}</span>
-                {user.role === "ADMIN" && (
-                  <Link href="/admin" onClick={close} className="text-accent-blue hover:text-ink transition-colors">
-                    Admin
+                {/* User identity row */}
+                <div className="flex items-center gap-3 px-6 py-4">
+                  {user.image ? (
+                    <Image
+                      src={user.image}
+                      alt={user.name ?? user.email}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-ink text-paper font-mono text-base font-semibold flex items-center justify-center shrink-0">
+                      {(user.name ?? user.email)[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-sans text-sm font-semibold text-ink truncate">
+                      {user.name ?? user.email.split("@")[0]}
+                    </p>
+                    <p className="font-mono text-xs text-muted truncate">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="border-t b-soft pb-6">
+                  <Link
+                    href="/account"
+                    onClick={close}
+                    className="flex items-center gap-3 px-6 py-3 font-sans text-sm text-ink hover:bg-surface transition-colors"
+                  >
+                    <User size={16} className="text-muted shrink-0" />
+                    Tài khoản
                   </Link>
-                )}
-                <SignOutButton className="text-muted hover:text-ink transition-colors text-left cursor-pointer" />
+                  {user.role === "ADMIN" && (
+                    <Link
+                      href="/admin"
+                      onClick={close}
+                      className="flex items-center gap-3 px-6 py-3 font-sans text-sm text-ink hover:bg-surface transition-colors"
+                    >
+                      <LayoutDashboard
+                        size={16}
+                        className="text-muted shrink-0"
+                      />
+                      Trang quản trị
+                    </Link>
+                  )}
+                  <SignOutButton className="w-full flex items-center gap-3 px-6 py-3 font-sans text-sm text-muted hover:bg-surface hover:text-ink transition-colors cursor-pointer">
+                    <LogOut size={16} className="shrink-0" />
+                    Đăng xuất
+                  </SignOutButton>
+                </div>
               </>
             ) : (
-              <Link href="/login" onClick={close} className="text-muted hover:text-ink transition-colors">
-                Đăng nhập
-              </Link>
+              <div className="px-6 py-5">
+                <Link
+                  href="/login"
+                  onClick={close}
+                  className="flex items-center justify-center w-full font-mono text-sm bg-ink text-paper rounded-sm py-3 hover:opacity-80 transition-opacity"
+                >
+                  Đăng nhập
+                </Link>
+              </div>
             )}
           </motion.div>
         </motion.div>

@@ -10,7 +10,7 @@ export default async function AdminPostsPage() {
   return (
     <div className="bg-paper rounded-md overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-6 pb-4">
+      <div className="flex items-center justify-between px-4 md:px-6 pt-4 md:pt-6 pb-4">
         <h1 className="font-mono uppercase tracking-[2px] text-lg">Bài viết</h1>
         <a
           href="/admin/posts/new"
@@ -36,7 +36,7 @@ export default async function AdminPostsPage() {
       {posts.map((post, i) => (
         <div
           key={post.id}
-          className={`flex items-center gap-4 px-6 py-4 hover:bg-surface transition-colors${
+          className={`flex items-center gap-3 px-4 md:px-6 py-4 hover:bg-surface transition-colors${
             i !== posts.length - 1 ? " border-b" : " mb-2"
           }`}
           style={
@@ -53,9 +53,9 @@ export default async function AdminPostsPage() {
                 <span className="text-muted italic">Chưa có tiêu đề</span>
               )}
             </a>
-            <div className="flex items-center gap-1.5 mt-1.5">
+            <div className="flex items-center gap-2 mt-2">
               <span
-                className="w-1.5 h-1.5 rounded-full shrink-0"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{
                   backgroundColor:
                     post.status === "PUBLISHED" ? "#22c55e" : "#9ca3af",

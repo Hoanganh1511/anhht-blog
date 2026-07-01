@@ -13,6 +13,7 @@
   --muted: #6B6A64;
   --line: #1A1A1A;
   --border-color: #D4D4D4;
+  --line-primary: rgba(8, 19, 26, 0.14);
   --accent-blue: #2563EB;
   --accent-coral: #E0541E;
   --code-bg: #F1EFE8;
@@ -25,12 +26,17 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-border: var(--border-color);
+  --color-line-primary: var(--line-primary);
   --color-accent-blue: var(--accent-blue);
   --color-accent-coral: var(--accent-coral);
   --color-code-bg: var(--code-bg);
   --font-mono: var(--font-montserrat);
   --font-sans: var(--font-montserrat);
   --radius: 2px;
+}
+
+html {
+  font-size: 16px;
 }
 
 body {
@@ -71,14 +77,17 @@ header { background-color: #ffffff !important; }
 .bottom-2px { bottom: 2px; }
 .neg-bottom-2px { bottom: -2px; }
 
-/* Reset Safari default input styling */
-input, textarea, select {
-  font-size: 1rem;
-  -webkit-appearance: none;
-  appearance: none;
-  border: none;
-  outline: none;
-  background: transparent;
+/* Reset Safari default input styling — inside @layer base so utilities can override */
+@layer base {
+  input, textarea, select {
+    font-size: 1rem;
+    -webkit-appearance: none;
+    appearance: none;
+    border-width: 0;
+    border-style: solid;
+    outline: none;
+    background: transparent;
+  }
 }
 
 /* BlockNote read-only renderer — strip internal side padding */
