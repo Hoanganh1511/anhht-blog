@@ -1,7 +1,5 @@
 "use client";
 
-import { getApiBase } from "@/lib/api";
-
 interface Props {
   provider: "google" | "github";
   children: React.ReactNode;
@@ -10,16 +8,13 @@ interface Props {
 
 export function SignInButton({ provider, children, className }: Props) {
   async function handleSignIn() {
-    const api = getApiBase();
-
-    // Bước 1: Lấy CSRF token từ Express (Auth.js yêu cầu)
-    const csrfRes = await fetch(`${api}/auth/csrf`, { credentials: "include" });
+    // Dùng path tương đối /auth/* (proxied qua Next.js) để cookie gắn đúng domain
+    const csrfRes = await fetch("/auth/csrf", { credentials: "include" });
     const { csrfToken } = await csrfRes.json();
 
-    // Bước 2: POST form đến /auth/signin/:provider
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = `${api}/auth/signin/${provider}`;
+    form.action = `/auth/signin/${provider}`;
 
     const fields = {
       csrfToken,
