@@ -105,14 +105,13 @@ function WelcomeContent({ onExplore }: { onExplore: () => void }) {
   );
 }
 
-export function WelcomeModalTrigger() {
+export function WelcomeModalTrigger({ isLoggedIn }: { isLoggedIn: boolean }) {
   const { open, close, isOpen } = useModal();
   const wasOpened = useRef(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    // TODO: re-enable localStorage check after testing
-    // if (localStorage.getItem(STORAGE_KEY)) return;
+    if (!isLoggedIn) return;
+    if (localStorage.getItem(STORAGE_KEY)) return;
 
     const timer = setTimeout(() => {
       wasOpened.current = true;
@@ -121,7 +120,7 @@ export function WelcomeModalTrigger() {
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLoggedIn]);
 
   // Mark welcomed on any close (X button or CTA)
   useEffect(() => {

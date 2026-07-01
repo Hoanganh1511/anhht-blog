@@ -10,22 +10,40 @@ interface Props {
   authorName: string;
   authorImage?: string | null;
   isLoggedIn: boolean;
+  isAuthor?: boolean;
 }
 
-export function StickyAuthorBar({ authorName, authorImage, isLoggedIn }: Props) {
-  const [visible, setVisible] = useState(false);
+export function StickyAuthorBar({ authorName, authorImage, isLoggedIn, isAuthor }: Props) {
+  const [headerPassed, setHeaderPassed] = useState(false);
+  const [authorReached, setAuthorReached] = useState(false);
+  const visible = headerPassed && !authorReached;
   const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
   const { open, close } = useModal();
 
   useEffect(() => {
-    const sentinel = document.getElementById("post-header-sentinel");
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
+    const headerSentinel = document.getElementById("post-header-sentinel");
+    const authorCard = document.getElementById("post-author-card");
+    if (!headerSentinel) return;
+
+    const headerObs = new IntersectionObserver(
+      ([entry]) => setHeaderPassed(!entry.isIntersecting),
       { threshold: 0 },
     );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    headerObs.observe(headerSentinel);
+
+    let authorObs: IntersectionObserver | null = null;
+    if (authorCard) {
+      authorObs = new IntersectionObserver(
+        ([entry]) => setAuthorReached(entry.isIntersecting),
+        { threshold: 0 },
+      );
+      authorObs.observe(authorCard);
+    }
+
+    return () => {
+      headerObs.disconnect();
+      authorObs?.disconnect();
+    };
   }, []);
 
   const handleMessage = () => {
@@ -61,16 +79,18 @@ export function StickyAuthorBar({ authorName, authorImage, isLoggedIn }: Props) 
           <span className="font-medium text-sm text-ink truncate">{authorName}</span>
         </div>
 
-        <button
-          type="button"
-          onClick={handleMessage}
-          className="shrink-0 flex items-center gap-1.5 font-mono text-sm font-medium border border-line rounded-sm px-3.5 py-1.5 text-ink hover:bg-surface transition-colors cursor-pointer"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          Nhắn tin
-        </button>
+        {!isAuthor && (
+          <button
+            type="button"
+            onClick={handleMessage}
+            className="shrink-0 flex items-center gap-1.5 font-mono text-sm font-medium border border-line rounded-sm px-3.5 py-1.5 text-ink hover:bg-surface transition-colors cursor-pointer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Nhắn tin
+          </button>
+        )}
       </div>
     </div>,
     document.body,

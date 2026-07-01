@@ -10,7 +10,9 @@ export function CoverGallery({
   coverImage?: string | null;
   coverImages?: string[];
 }) {
-  const images = [coverImage, ...(coverImages ?? [])].filter(Boolean) as string[];
+  const images = [coverImage, ...(coverImages ?? [])].filter(
+    Boolean,
+  ) as string[];
   if (!images.length) return null;
 
   const isSingle = images.length === 1;
@@ -18,7 +20,7 @@ export function CoverGallery({
   return (
     <div className="overflow-x-auto no-scrollbar -mx-4 px-4 mb-10">
       <div
-        className={`flex items-end gap-4 pt-2 pb-4 ${isSingle ? "justify-start" : "justify-start md:justify-center"}`}
+        className={`flex items-end gap-4 pt-2 pb-2 ${isSingle ? "justify-start" : "justify-start md:justify-center"}`}
         style={{ minWidth: "fit-content" }}
       >
         {images.map((src, i) => {

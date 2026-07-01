@@ -38,10 +38,10 @@ export function SidebarNav({ categories }: { categories: Category[] }) {
   const childrenOf = (id: string) => categories.filter((c) => c.parentId === id);
 
   const [openIds, setOpenIds] = useState<Set<string>>(() => {
+    // Mở sẵn tất cả cate cha có children
     const s = new Set<string>();
     roots.forEach((root) => {
-      const children = categories.filter((c) => c.parentId === root.id);
-      if (children.some((c) => path === `/category/${c.slug}`)) s.add(root.id);
+      if (categories.some((c) => c.parentId === root.id)) s.add(root.id);
     });
     return s;
   });

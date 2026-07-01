@@ -88,6 +88,13 @@ input, textarea, select {
   padding-right: 0 !important;
 }
 
+/* Post body — Lora serif + relaxed line-height */
+.bn-readonly .bn-block-content,
+.bn-readonly p {
+  font-family: var(--font-lora), Georgia, serif !important;
+  line-height: 1.85 !important;
+}
+
 /* Modal */
 .modal-overlay {
   backdrop-filter: blur(6px);
