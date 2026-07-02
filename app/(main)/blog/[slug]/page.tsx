@@ -12,6 +12,7 @@ import {
 import { StickyAuthorBar } from "@/components/StickyAuthorBar";
 import { PostReactions } from "@/components/PostReactions";
 import { PostAuthorCard } from "@/components/PostAuthorCard";
+import { CommentsSection } from "@/components/comments/CommentsSection";
 import Image from "next/image";
 import type { Metadata } from "next";
 
@@ -73,6 +74,11 @@ export default async function BlogPostPage({ params }: Props) {
   if (res.status === 404) notFound();
   const post = await res.json();
   const author = authorRes.ok ? await authorRes.json() : { name: null, image: null, bio: null };
+
+  const commentsRes = await serverFetch(`/posts/${post.id}/comments`);
+  const initialComments = commentsRes.ok
+    ? await commentsRes.json()
+    : { comments: [], total: 0, nextCursor: null };
 
   const authorName = author.name ?? session?.user?.name ?? "Tuấn Anh";
   const authorImage = author.image ?? session?.user?.image ?? null;
@@ -182,14 +188,15 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       )}
 
-      <section className=" border-t border-line-primary pt-8">
-        <h2 className="font-mono uppercase tracking-[2px] text-sm mb-4">
-          Bình luận
-        </h2>
-        <p className="font-mono text-xs text-muted">
-          [Comment section sẽ implement ở Phase 4]
-        </p>
-      </section>
+      <CommentsSection
+        postId={post.id}
+        isLoggedIn={!!session}
+        currentUserId={session?.user?.id ?? null}
+        isAdmin={session?.user?.role === "ADMIN"}
+        currentUserName={session?.user?.name ?? null}
+        currentUserImage={session?.user?.image ?? null}
+        initialData={initialComments}
+      />
     </main>
   );
 }
